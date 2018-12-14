@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-%cd "C:\Users\tarek\git_workspace\dsnd-disaster-response"
+
 # # ETL Pipeline Preparation
 # Follow the instructions below to help you create your ETL pipeline.
 # ### 1. Import libraries and load datasets.
@@ -14,7 +14,7 @@
 # import libraries
 import pandas as pd
 import numpy as np
-
+%cd "C:\Users\tarek\git_workspace\dsnd-disaster-response"
 # In[ ]:
 
 
@@ -27,7 +27,7 @@ messages.head()
 
 
 # load categories dataset
-categories = 
+categories = pd.read_csv("categories.csv")
 categories.head()
 
 
@@ -39,7 +39,7 @@ categories.head()
 
 
 # merge datasets
-df = 
+df = pd.merge(messages, categories, on='id', how='left')
 df.head()
 
 
@@ -52,7 +52,7 @@ df.head()
 
 
 # create a dataframe of the 36 individual category columns
-categories = 
+categories = df['categories'].str.split(";", expand=True)
 categories.head()
 
 
@@ -60,12 +60,12 @@ categories.head()
 
 
 # select the first row of the categories dataframe
-row = 
+row = categories.iloc[0]
 
 # use this row to extract a list of new column names for categories.
-# one way is to apply a lambda function that takes everything 
+# one way is to apply a lambda function that takes everything
 # up to the second to last character of each string with slicing
-category_colnames = 
+category_colnames = row.apply(lambda x: x[:-2])
 print(category_colnames)
 
 
