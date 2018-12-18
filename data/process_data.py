@@ -21,7 +21,7 @@ def clean_data(df):
         categories[column] = categories[column].str[-1]
         # convert column from string to numeric
         categories[column] = categories[column].astype(int)
-    df.drop(['categories'], axis=1, inplace=True)
+    df.drop(['categories'], axis=1, inplace=True) 
     df = pd.concat([df, categories], axis=1, sort=False)
     df = df[~df.duplicated()]
     return df
@@ -29,7 +29,7 @@ def clean_data(df):
 
 def save_data(df, database_filename):
     engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql('messages', engine, index=False)
+    df.to_sql('messages', engine, index=False, if_exists='replace')
 
 
 def main():
