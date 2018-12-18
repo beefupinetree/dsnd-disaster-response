@@ -22,13 +22,12 @@ warnings.filterwarnings("ignore")
 
 def load_data(database_filepath):
     engine = create_engine('sqlite:///' + database_filepath)
-    df = pd.read_sql_table('messages', engine).loc[:99]
+    df = pd.read_sql_table('messages', engine)
     X = df['message'].values
     # the 'genre', 'original', and 'id' variables were dropped
     Y = df.loc[:, 'related':].values
     category_names = df.columns[4:]
     return X, Y, category_names
-
 
 
 def tokenize(text):
@@ -75,25 +74,25 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
 
 def build_model():
-    pipeline = Pipeline([
-        ('features', FeatureUnion([
-            ('text_pipeline', Pipeline([
-                ('vect', CountVectorizer(tokenizer=tokenize)),
-                ('tfidf', TfidfTransformer())
-            ])),
-            ('starting_verb', StartingVerbExtractor())
-        ])),
-        ('clf',
-         MultiOutputClassifier(RandomForestClassifier(random_state=42),
-                               n_jobs=-1))
-    ])
-
 #    pipeline = Pipeline([
-#        ('vect', CountVectorizer(tokenizer=tokenize)),
-#        ('tfidf', TfidfTransformer()),
+#        ('features', FeatureUnion([
+#            ('text_pipeline', Pipeline([
+#                ('vect', CountVectorizer(tokenizer=tokenize)),
+#                ('tfidf', TfidfTransformer())
+#            ])),
+#            ('starting_verb', StartingVerbExtractor())
+#        ])),
 #        ('clf',
-#         MultiOutputClassifier(RandomForestClassifier(random_state=42)))
+#         MultiOutputClassifier(RandomForestClassifier(random_state=42),
+#                               n_jobs=-1))
 #    ])
+
+    pipeline = Pipeline([
+        ('vect', CountVectorizer(tokenizer=tokenize)),
+        ('tfidf', TfidfTransformer()),
+        ('clf',
+         MultiOutputClassifier(RandomForestClassifier(random_state=42)))
+    ])
 #    parameters = {'clf__estimator__estimator__kernel': ['rbf', 'linear',
 #                                                        'poly'],
 #                  'clf__estimator__estimator__C': [0.5, 1, 2]
@@ -131,7 +130,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    filename = model_filepath + "\\optimal_model.pkl"
+    filename = model_filepath  # + "\\optimal_model.pkl"
     pickle.dump(model, open(filename, 'wb'))
 
 
