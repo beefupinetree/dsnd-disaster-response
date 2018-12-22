@@ -21,6 +21,15 @@ warnings.filterwarnings("ignore")
 
 
 def load_data(database_filepath):
+    '''
+    input:
+        database_filepath: File path of the database created from
+        process_Data.py.
+    output:
+        X: 1-d df with all the messages.
+        Y: df of the categories assigned to each message.
+        category_names: List of names of the possible categories.
+    '''
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('messages', engine)
     X = df['message'].values
@@ -74,6 +83,12 @@ class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
 
 def build_model():
+    '''
+    input:
+        N/A
+    output:
+        cv: model pipeline and grid-search parameters.
+    '''
 #    pipeline = Pipeline([
 #        ('features', FeatureUnion([
 #            ('text_pipeline', Pipeline([
@@ -120,6 +135,15 @@ def build_model():
 #                                    target_names=category_names))
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    input:
+        model: Fitted classification model.
+        X_test: df of messages to test our model
+        Y_test: df of the actual categories
+        category_names: List of names of the categories to be classified.
+    output:
+        N/A: Prints a classification report to the console.
+    '''
     Y_pred = model.predict(X_test)
     print(classification_report(Y_test, Y_pred, target_names=category_names))
     print('---------------------------------')
@@ -130,7 +154,14 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
-    filename = model_filepath  # + "\\optimal_model.pkl"
+    '''
+    input:
+        model: Trained classification model.
+        model_filepath: Path where the model will be saved.
+    output:
+        N/A: saves model to designated path.
+    '''
+    filename = model_filepath
     pickle.dump(model, open(filename, 'wb'))
 
 
