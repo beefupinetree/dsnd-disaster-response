@@ -1,6 +1,6 @@
 # Disaster Response Pipeline Project
 
-This is the 5th project for Udacity's Datascience Nanodegree program
+This is the 5th project for Udacity's Datascience Nanodegree program. We attempt to classify messages sent during a disaster scenario, in order to know which services should be sent to which locations.
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
