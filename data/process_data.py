@@ -30,7 +30,7 @@ def clean_data(df):
     categories.columns = category_colnames
 
     for column in categories:
-        categories[column] = categories[column].str[-1]
+        categories[column] = categories[column].apply(lambda x: x.split('-')[1] if int(x.split('-')[1]) < 2 else 1)
         categories[column] = categories[column].astype(int)
     df.drop(['categories'], axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1, sort=False)
