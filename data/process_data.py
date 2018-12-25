@@ -34,7 +34,6 @@ def clean_data(df):
         categories[column] = categories[column].astype(int)
     df.drop(['categories'], axis=1, inplace=True)
     df = pd.concat([df, categories], axis=1, sort=False)
-#    df = df[~df.duplicated()]
     df.drop_duplicates(subset='id', inplace=True)
     return df
 

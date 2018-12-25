@@ -5,15 +5,12 @@ import pickle
 import warnings
 import pandas as pd
 from sqlalchemy import create_engine
-from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
@@ -63,25 +60,6 @@ def tokenize(text):
     return clean_tokens
 
 
-class StartingVerbExtractor(BaseEstimator, TransformerMixin):
-
-    def starting_verb(self, text):
-        sentence_list = nltk.sent_tokenize(text)
-        for sentence in sentence_list:
-            pos_tags = nltk.pos_tag(tokenize(sentence))
-            first_word, first_tag = pos_tags[0]
-            if first_tag in ['VB', 'VBP'] or first_word == 'RT':
-                return True
-        return False
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, X):
-        X_tagged = pd.Series(X).apply(self.starting_verb)
-        return pd.DataFrame(X_tagged)
-
-
 def build_model():
     '''
     input:
@@ -89,50 +67,19 @@ def build_model():
     output:
         cv: model pipeline and grid-search parameters.
     '''
-#    pipeline = Pipeline([
-#        ('features', FeatureUnion([
-#            ('text_pipeline', Pipeline([
-#                ('vect', CountVectorizer(tokenizer=tokenize)),
-#                ('tfidf', TfidfTransformer())
-#            ])),
-#            ('starting_verb', StartingVerbExtractor())
-#        ])),
-#        ('clf',
-#         MultiOutputClassifier(RandomForestClassifier(random_state=42),
-#                               n_jobs=-1))
-#    ])
-
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf',
          MultiOutputClassifier(RandomForestClassifier(random_state=42)))
     ])
-#    parameters = {'clf__estimator__estimator__kernel': ['rbf', 'linear',
-#                                                        'poly'],
-#                  'clf__estimator__estimator__C': [0.5, 1, 2]
-#                  }
-#    parameters = {'clf__estimator__kernel': ['rbf']
-#                  }
     parameters = {'clf__estimator__n_estimators': [10, 20],
                   'clf__estimator__min_samples_split': [2, 4]
                   }
-#    cv = GridSearchCV(pipeline, param_grid=parameters,
-#                      scoring='precision_samples', cv=5)
     cv = GridSearchCV(pipeline, param_grid=parameters)
     return cv
 
 
-#def evaluate_model(model, X_test, Y_test, category_names):
-#    y_pred = model.predict(X_test)
-#
-#    print('Best score and parameter combination = ')
-#    print(model.best_score_)
-#    print(model.best_params_)
-#    for i, column in enumerate(Y_test.columns):
-#        print("{}. {}:".format(i+1, column))
-#        print(classification_report(Y_test[Y_test.columns[i]], y_pred[:,i],
-#                                    target_names=category_names))
 
 def evaluate_model(model, X_test, Y_test, category_names):
     '''
@@ -146,7 +93,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     '''
     Y_pred = model.predict(X_test)
     print(classification_report(Y_test, Y_pred, target_names=category_names))
-    print('---------------------------------')
+    print()
     for i in range(Y_test.shape[1]):
         print('{0:>25s} accuracy : {1:.2f}'.format(category_names[i],
               accuracy_score(Y_test[:, i],
