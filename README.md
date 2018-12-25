@@ -2,8 +2,6 @@
 
 This is the 5th project for Udacity's Datascience Nanodegree program. We attempt to classify messages sent during a disaster scenario, in order to know which services should be sent to which locations.
 
-The libraries used in this project are:
-
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.
 
@@ -15,7 +13,7 @@ The libraries used in this project are:
 2. Run the following command in the app's directory to run your web app.
     `python run.py`
 
-3. Go to http://0.0.0.0:3001/
+3. Go to https://view6914b2f4-3001.udacity-student-workspaces.com/
 
 ### Explanation of the Files:
 - `data/process_data.py`: The ETL pipeline used to process data and save it in order to build our model.
